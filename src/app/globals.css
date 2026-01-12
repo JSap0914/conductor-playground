@@ -1,0 +1,367 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+@import "tailwindcss";
+
+:root {
+  --background: #0a0a0a;
+  --foreground: #fafafa;
+  --card: #111111;
+  --card-hover: #1a1a1a;
+  --accent-fire: #ff4500;
+  --accent-cyan: #00f2ea;
+  --accent-purple: #b14aff;
+  --accent-lime: #84ff57;
+  --noise-opacity: 0.03;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: 'Syne', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+}
+
+/* Noise texture overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: var(--noise-opacity);
+  pointer-events: none;
+  z-index: 1000;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Syne', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Animated gradient background */
+.bg-chaos {
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(255, 69, 0, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(0, 242, 234, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(177, 74, 255, 0.08) 0%, transparent 70%),
+    var(--background);
+  min-height: 100vh;
+}
+
+/* Glitch text effect */
+.glitch-text {
+  position: relative;
+  animation: glitch-skew 4s infinite linear alternate-reverse;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glitch-text::before {
+  left: 2px;
+  text-shadow: -2px 0 var(--accent-cyan);
+  clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+  animation: glitch-before 3s infinite linear alternate-reverse;
+}
+
+.glitch-text::after {
+  left: -2px;
+  text-shadow: 2px 0 var(--accent-fire);
+  clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+  animation: glitch-after 2s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-before {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-3px); }
+  40% { transform: translateX(3px); }
+  60% { transform: translateX(-1px); }
+  80% { transform: translateX(2px); }
+}
+
+@keyframes glitch-after {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(3px); }
+  40% { transform: translateX(-2px); }
+  60% { transform: translateX(1px); }
+  80% { transform: translateX(-3px); }
+}
+
+@keyframes glitch-skew {
+  0%, 100% { transform: skew(0deg); }
+  20% { transform: skew(0.5deg); }
+  40% { transform: skew(-0.5deg); }
+  60% { transform: skew(0.3deg); }
+  80% { transform: skew(-0.3deg); }
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent-fire), var(--accent-cyan), var(--accent-purple));
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Cards */
+.card {
+  background: var(--card);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+/* Upload zone */
+.upload-zone {
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.upload-zone:hover {
+  border-color: var(--accent-cyan);
+  background: rgba(0, 242, 234, 0.05);
+}
+
+.upload-zone.dragging {
+  border-color: var(--accent-fire);
+  background: rgba(255, 69, 0, 0.1);
+  transform: scale(1.02);
+}
+
+/* Primary button with fire effect */
+.btn-fire {
+  position: relative;
+  background: linear-gradient(135deg, var(--accent-fire), #ff6b35);
+  border: none;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-fire::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(255,255,255,0.2), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.btn-fire:hover::before {
+  transform: translateX(100%);
+}
+
+.btn-fire:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow:
+    0 10px 40px rgba(255, 69, 0, 0.4),
+    0 0 60px rgba(255, 69, 0, 0.2);
+}
+
+.btn-fire:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Secondary button */
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+/* Loading animation */
+@keyframes chaos-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(255, 69, 0, 0.5),
+      0 0 40px rgba(255, 69, 0, 0.3);
+  }
+  33% {
+    box-shadow:
+      0 0 20px rgba(0, 242, 234, 0.5),
+      0 0 40px rgba(0, 242, 234, 0.3);
+  }
+  66% {
+    box-shadow:
+      0 0 20px rgba(177, 74, 255, 0.5),
+      0 0 40px rgba(177, 74, 255, 0.3);
+  }
+}
+
+.loading-chaos {
+  animation: chaos-pulse 1.5s infinite;
+}
+
+/* Tab buttons */
+.tab-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.tab-btn:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, var(--accent-fire), var(--accent-cyan));
+  color: white;
+}
+
+/* Result card for copying */
+.result-card {
+  background: linear-gradient(145deg, #1a1a1a 0%, #0f0f0f 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.result-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-fire), var(--accent-cyan), var(--accent-purple));
+}
+
+/* Image preview */
+.image-preview {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.image-preview img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  max-height: 300px;
+}
+
+.image-preview .remove-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.image-preview .remove-btn:hover {
+  background: var(--accent-fire);
+  transform: scale(1.1);
+}
+
+/* Floating elements */
+.float-element {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.5;
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Text area styling */
+.chaos-textarea {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  font-family: 'Space Mono', monospace;
+}
+
+.chaos-textarea:focus {
+  outline: none;
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 20px rgba(0, 242, 234, 0.15);
+}
+
+/* Copy success animation */
+@keyframes copy-success {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.copy-success {
+  animation: copy-success 0.3s ease;
+  color: var(--accent-lime) !important;
+}
+
+/* Meme tag pills */
+.meme-tag {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, rgba(255, 69, 0, 0.2), rgba(177, 74, 255, 0.2));
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-family: 'Space Mono', monospace;
+  color: var(--accent-cyan);
+  border: 1px solid rgba(0, 242, 234, 0.3);
+}
