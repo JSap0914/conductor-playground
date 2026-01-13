@@ -2,6 +2,16 @@
 
 import { useState, useRef, useCallback } from "react";
 
+const parseBoldMarkdown = (text: string) => {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={i} className="font-bold text-white">{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+};
+
 const EXAMPLES = [
   {
     label: "Beauty",
@@ -28,7 +38,6 @@ export default function Home() {
   const [dragging, setDragging] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const resultCardRef = useRef<HTMLDivElement>(null);
 
   const handleImageUpload = useCallback((file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -98,50 +107,6 @@ export default function Home() {
       await navigator.clipboard.writeText(result);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-  const handleCopyAsImage = async () => {
-    if (!resultCardRef.current) return;
-
-    try {
-      const html2canvas = (await import("html2canvas")).default;
-      const canvas = await html2canvas(resultCardRef.current, {
-        backgroundColor: "#0a0a0a",
-        scale: 2,
-      });
-
-      canvas.toBlob(async (blob) => {
-        if (blob) {
-          await navigator.clipboard.write([
-            new ClipboardItem({ "image/png": blob }),
-          ]);
-          setCopied(true);
-          setTimeout(() => setCopied(false), 2000);
-        }
-      });
-    } catch (err) {
-      console.error("Failed to copy as image:", err);
-      handleCopyText();
-    }
-  };
-
-  const handleDownloadImage = async () => {
-    if (!resultCardRef.current) return;
-
-    try {
-      const html2canvas = (await import("html2canvas")).default;
-      const canvas = await html2canvas(resultCardRef.current, {
-        backgroundColor: "#0a0a0a",
-        scale: 2,
-      });
-
-      const link = document.createElement("a");
-      link.download = "meme-localized.png";
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-    } catch (err) {
-      console.error("Failed to download image:", err);
     }
   };
 
@@ -306,18 +271,6 @@ export default function Home() {
                   {copied ? "Copied! ✓" : "Copy Text"}
                 </button>
                 <button
-                  onClick={handleCopyAsImage}
-                  className="btn-ghost px-5 py-2 rounded-full text-sm font-semibold text-white"
-                >
-                  Copy as Image
-                </button>
-                <button
-                  onClick={handleDownloadImage}
-                  className="btn-ghost px-5 py-2 rounded-full text-sm font-semibold text-white"
-                >
-                  Download PNG
-                </button>
-                <button
                   onClick={handleClear}
                   className="btn-ghost px-5 py-2 rounded-full text-sm font-semibold text-white"
                 >
@@ -326,11 +279,8 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Shareable Result Card */}
-            <div
-              ref={resultCardRef}
-              className="result-card rounded-2xl p-6"
-            >
+            {/* Result Card */}
+            <div className="result-card rounded-2xl p-6">
               <div className="space-y-4">
                 {result.split("\n").map((line, i) => {
                   if (line.startsWith("## ")) {
@@ -347,7 +297,7 @@ export default function Home() {
                   if (line.startsWith("- ")) {
                     return (
                       <p key={i} className="text-gray-300 ml-4 font-mono text-sm">
-                        {line}
+                        {parseBoldMarkdown(line)}
                       </p>
                     );
                   }
